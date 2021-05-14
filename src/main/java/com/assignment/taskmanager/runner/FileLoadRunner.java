@@ -15,10 +15,10 @@ import java.util.Scanner;
 import java.util.concurrent.BlockingQueue;
 
 public class FileLoadRunner implements Runnable {
-    private BlockingQueue<List<TaskStatus>> queue ;
-    private Integer batchSize ;
-    private String filePath ;
-    private static Logger logger = LoggerFactory.getLogger(FileLoadRunner.class) ;
+    private final BlockingQueue<List<TaskStatus>> queue ;
+    private final Integer batchSize ;
+    private final String filePath ;
+    private static final Logger logger = LoggerFactory.getLogger(FileLoadRunner.class) ;
 
     public FileLoadRunner(BlockingQueue<List<TaskStatus>> queue, Integer batchSize, String filePath) {
         this.queue = queue;
@@ -59,6 +59,7 @@ public class FileLoadRunner implements Runnable {
                         TaskStatus status = new TaskStatus() ;
                         // Parse the JSON string to map it to TaskStatus members.
                         status.fromString(line);
+
                         batchData.add(status) ;
                         recordCounter++ ;
                     }
@@ -76,21 +77,17 @@ public class FileLoadRunner implements Runnable {
                 }
             }
         }
-        catch (FileNotFoundException e) {
-            logger.error("File does not exist : " + this.filePath);
-        } catch (JsonProcessingException e){
-            logger.error("JSON Processing error for line : " + line);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+        catch (FileNotFoundException | JsonProcessingException | InterruptedException e) {
+            logger.error(e.getLocalizedMessage());
         } catch (IOException e) {
-            logger.info("IO Exception occurred while reading through scanner");
+            logger.error("IO Exception occurred while reading through scanner");
         }
         finally {
             if(inputStream != null){
                 try {
                     inputStream.close();
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    logger.error(e.getLocalizedMessage());
                 }
             }
 

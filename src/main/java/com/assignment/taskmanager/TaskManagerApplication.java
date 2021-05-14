@@ -109,7 +109,7 @@ public class TaskManagerApplication {
 		// Check until the file loader thread is still running (as it will add new batches). OR
 		// until the queue is empty. Wait until all batches are consumed even if the file loader thread finishes.
 		while (fileLoadThread.isAlive() || !queue.isEmpty()){
-			logger.info("Current available batches in the queue : " + queue.size());
+			logger.debug("Current available batches in the queue : " + queue.size());
 			try {
 				// if batches are available in the queue, submit to the thread pool.
 				if(queue.size()>0){
@@ -121,7 +121,7 @@ public class TaskManagerApplication {
 					Thread.sleep(2000);
 				}
 			} catch (InterruptedException e) {
-				e.printStackTrace();
+				logger.error(e.getLocalizedMessage());
 			}
 		}
 
